@@ -1,7 +1,6 @@
-import time
-
 import numpy as np
-from geneticalgorithm.geneticalgorithm import geneticalgorithm as ga
+
+from geneticalgorithm.asyncgeneticalgorithm import asyncgeneticalgorithm
 
 TESTS = [
     np.random.rand(8) for i in range(0, 20)
@@ -24,10 +23,40 @@ def cost_function(individual):
         ) for i in TESTS
     )
 
+async def a_cost_function(individual):
+    return sum(
+        abs(
+            calculated(individual, i) - calculated(target_individual, i)
+        ) for i in TESTS
+    )
+
 if __name__ == '__main__':
     varbound=np.array([[-30,+30], [-100,+100], [-30, +30], [-100,+100], [0, 4], [0, 2], [0, 1], [0, 3]])
     vartype=np.array([['real'],['real'],['real'], ['real'], ['int'], ['int'], ['int'], ['int']])
-    model = ga(function=cost_function,
+    # model = ga(
+    #            # max_concurrent_tasks=20,
+    #            function=cost_function,
+    #            dimension=8,
+    #            variable_type_mixed=vartype,
+    #            variable_boundaries=varbound,
+    #            algorithm_parameters={'max_num_iteration': None,
+    #                    'population_size': 100,
+    #                    'mutation_probability':0.1,
+    #                    'elit_ratio': 0.03,
+    #                    'crossover_probability': 0.5,
+    #                    'surviving_parents_portion': 0.3,
+    #                    'crossover_type':'uniform',
+    #                    'max_iteration_without_improv': None
+    #         }
+    #
+    # )
+    #
+    # model.run()
+
+
+    model2 = asyncgeneticalgorithm(
+               max_concurrent_tasks=None,
+               function=a_cost_function,
                dimension=8,
                variable_type_mixed=vartype,
                variable_boundaries=varbound,
@@ -38,9 +67,8 @@ if __name__ == '__main__':
                        'crossover_probability': 0.5,
                        'surviving_parents_portion': 0.3,
                        'crossover_type':'uniform',
-                       'max_iteration_without_improv': None
+                       'max_iteration_without_improv': 20
             }
 
     )
-
-    model.run()
+    model2.run()
