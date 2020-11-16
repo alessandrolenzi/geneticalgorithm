@@ -63,7 +63,8 @@ class geneticalgorithm():
                  variable_boundaries=None,\
                  variable_type_mixed=None, \
                  function_timeout=10,\
-                 algorithm_parameters=None):
+                 algorithm_parameters=None,
+                 progress_callback=None):
 
 
         '''
@@ -118,7 +119,9 @@ class geneticalgorithm():
         #############################################################
         # input function
         assert (callable(function)),"function must be callable"
-
+        if progress_callback is None:
+            self.progress_callback = lambda x, y, z: ()
+        self.progress_callback = progress_callback
         if algorithm_parameters is None:
             algorithm_parameters = {'max_num_iteration': None,\
                                        'population_size':100,\
@@ -332,6 +335,7 @@ class geneticalgorithm():
                 counter = 0
                 min_score = population[0,self.chromosome_size].copy()
                 fittest_individual = population [0,: self.chromosome_size].copy()
+                self.progress_callback(t, fittest_individual, min_score)
             else:
                 counter +=1
                 if counter > self.max_iterations_without_improvement:
@@ -368,6 +372,7 @@ class geneticalgorithm():
         sys.stdout.write('\r The best solution found:\n %s' % (fittest_individual))
         sys.stdout.write('\n\n Objective function:\n %s\n' % (min_score))
         sys.stdout.flush()
+        return fittest_individual, min_score
 
 
     def cross(self,x,y,c_type):

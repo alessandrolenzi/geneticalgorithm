@@ -67,8 +67,9 @@ if __name__ == '__main__':
                        'crossover_probability': 0.5,
                        'surviving_parents_portion': 0.3,
                        'crossover_type':'uniform',
-                       'max_iteration_without_improv': 20
-            }
+                       'max_iteration_without_improv': None
+            },
+            progress_callback=lambda it, fittest, score: print(f"At iteration {it} fittest {fittest} with score {score}")
 
     )
     model2.run()
